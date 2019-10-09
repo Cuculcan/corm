@@ -1,0 +1,27 @@
+{
+  "name": "cuculcan/corm",
+  "description": "room like orm",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Lexa",
+      "email": "alnazarr@gmail.com"
+    }
+  ],
+  "require": {
+    "symfony/console": "^3.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Corm\\": "src",
+      "Example\\": "example"
+    },
+    "classmap": [
+      "src", "example"
+    ]
+  },
+  "require-dev": {
+    "codeception/codeception": "^3.1"
+  }
+}
