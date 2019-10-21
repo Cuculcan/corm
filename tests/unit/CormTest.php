@@ -21,20 +21,6 @@ class CormTest extends \Codeception\Test\Unit
     }
 
    
-
-    public function testShouldBuldDatabaseFiles()
-    {
-
-        $expectedDBDir = __DIR__ . '/../../example/database/impl';
-        $expectedDBFile = __DIR__ . '/../../example/database/impl/ExampleDb_impl.php';
-        if (file_exists($expectedDBDir)) {
-            $this->delTree($expectedDBDir);
-        }
-        Corm::databaseBuilder( __DIR__ . '/../../example/database', "Example\Database\ExampleDb");
-
-        $this->assertTrue(file_exists($expectedDBFile));
-    }
-
     public function testShouldReturnDatabaseImpl()
     {
         $db = Corm::getDatabase("Example\Database\ExampleDb", \Example\Config::db);
@@ -47,12 +33,14 @@ class CormTest extends \Codeception\Test\Unit
         $db = Corm::getDatabase("");
     }
 
-    private  function delTree($dir)
-    {
-        $files = array_diff(scandir($dir), array('.', '..'));
-        foreach ($files as $file) {
-            (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
-        }
-        return rmdir($dir);
-    }
+    // public function testShouldReturnDatabaseImplAndTestDaoImp()
+    // {
+    //     $db = Corm::getDatabase("Example\Database\ExampleDb", \Example\Config::db);
+    //     $this->assertNotNull($db);
+
+    //     $testDao = $db->testDao();
+    //     $this->assertNotNull($testDao);
+    // }
+
+
 }

@@ -40,7 +40,5 @@ class GenerateCommand  extends SymfonyCommand
             ' prepare ... ',
         ]);
 
-        $corm = new Corm($namespace);
-        
     }
 }

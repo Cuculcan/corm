@@ -2,7 +2,7 @@
 
 namespace Corm\Base;
 
-abstract class Database {
+abstract class CormDatabase {
 
     protected $db;
 

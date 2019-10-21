@@ -7,7 +7,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 use Corm\Parser;
 use Corm\Models\DBClassModel;
-
+use Corm\Models\DaoGetter;
 class ParserTest extends \Codeception\Test\Unit
 {
     /**
@@ -23,7 +23,7 @@ class ParserTest extends \Codeception\Test\Unit
         ob_flush();
     }
 
-   
+
 
     public function testShouldParseDatabaseCalass()
     {
@@ -34,7 +34,23 @@ class ParserTest extends \Codeception\Test\Unit
         $this->assertTrue($result instanceof  DBClassModel);
         $this->assertTrue($result->namespace == "Example\Database");
         $this->assertTrue($result->className == "ExampleDb");
+        $this->assertTrue($result instanceof  DBClassModel);
+        $this->assertTrue(is_array($result->entities));
+        $this->assertTrue(count($result->entities) == 2);
+        $this->assertTrue($result->entities_namespace == "Example\Database\Entities");
+
+        $this->assertTrue(is_array($result->daoInterfaces));
+        $this->assertTrue(count($result->daoInterfaces) == 1);
+        $this->assertTrue($result->daoInterfaces[0] instanceof DaoGetter);
     }
 
-   
+    public function testShouldParseDaoClassName(){
+        $parser = new Parser();
+
+        $daoClassInfo = $parser->parseDaoClassName('Example\Database\Dao\TestDao');
+        $this->assertTrue(is_array($daoClassInfo));
+        $this->assertTrue(count($daoClassInfo) == 3);
+        $this->assertTrue(array_key_exists('dao_name', $daoClassInfo));
+        
+    }
 }

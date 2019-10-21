@@ -16,8 +16,8 @@ class DBClassModel {
 
     public $entities;
 
+    public $entities_namespace;
+
     public $daoInterfaces;
-
-
 
 }
