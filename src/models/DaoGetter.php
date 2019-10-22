@@ -8,4 +8,5 @@ class DaoGetter {
 
     public $returnType;
 
+    public $returnTypeInfo;
 }

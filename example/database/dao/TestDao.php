@@ -1,6 +1,6 @@
 <?php
 
-namespace Example\dao;
+namespace Example\Database\Dao;
 
 /**
  * @dao

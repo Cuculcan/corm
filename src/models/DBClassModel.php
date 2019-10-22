@@ -2,7 +2,15 @@
 
 namespace Corm\Models;
 
-class DBClassModel {
+use Corm\Models\DaoGetter;
+class DBClassModel
+{
+
+    /**
+     * @var string
+     */
+
+    public $fullName;
 
     /**
      * @var string
@@ -18,6 +26,8 @@ class DBClassModel {
 
     public $entities_namespace;
 
+    /**
+     * @var DaoGetter[]
+     */
     public $daoInterfaces;
-
 }

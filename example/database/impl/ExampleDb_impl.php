@@ -23,7 +23,7 @@ class ExampleDb_impl extends \Example\Database\ExampleDb
         if($this->_TestDao_impl != null){
             return $this->_TestDao_impl;
         }
-        $this->_TestDao_impl = new TestDao_impl();
+        $this->_TestDao_impl = new TestDao_impl( $this );
 
         return  $this->_TestDao_impl;
     }

@@ -4,6 +4,7 @@ namespace Corm;
 
 use Corm\Exceptions\ClassNotFoundException;
 use Corm\Exceptions\BadParametersException;
+use Corm\Models\DaoClassModel;
 use Corm\Models\DBClassModel;
 use phpDocumentor\Reflection\DocBlockFactory;
 use Corm\Models\DaoGetter;
@@ -14,6 +15,8 @@ class Parser
     public function parseDatabaseClass($databaseClass): DBClassModel
     {
         $model =  new DBClassModel();
+        $model->fullName = $databaseClass;
+
         $parsedName = $this->parseClassname($databaseClass);
         $model->namespace = $parsedName['namespace'];
         $model->className = $parsedName['class_name'];
@@ -73,7 +76,6 @@ class Parser
             "class_name" => $classInfo['class_name'],
             "dao_name" => $daoName
         ];
-
     }
 
     private function parseEntitiesBlock($bloc)
@@ -126,7 +128,7 @@ class Parser
 
 
         $methods = array_filter($methods, function ($method) use (&$databaseClass) {
-            return trim($method->class) . "" == trim($databaseClass) && $method->isAbstract();;
+            return trim($method->class) . "" == trim($databaseClass) && $method->isAbstract();
         });
 
         $getDaoMethods = [];
@@ -142,10 +144,24 @@ class Parser
                 throw new BadParametersException($databaseClass . "::" . $methodInfo->name . "() : --  Return Type Missing ");
             }
             $methodInfo->returnType = $returnType->getName();
+            $methodInfo->returnTypeInfo = $this->parseDaoClassName($returnType->getName());
             $getDaoMethods[] = $methodInfo;
         }
 
 
         return $getDaoMethods;
+    }
+
+
+    public function parseDaoClass($daoClassName)
+    {
+        $daoClass = new DaoClassModel();
+
+        $classNameInfo = $this->parseDaoClassName($daoClassName);
+        $daoClass->fullName = $daoClassName;
+        $daoClass->classNameInfo = $classNameInfo;
+
+        return $daoClass;
+
     }
 }

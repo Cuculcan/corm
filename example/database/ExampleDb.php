@@ -3,6 +3,7 @@
 namespace Example\Database;
 
 use Example\Database\Dao\TestDao;
+use Example\Database\Dao\TestDao2;
 use Corm\Base\CormDatabase;
 
 /**
@@ -18,4 +19,6 @@ abstract class ExampleDb extends CormDatabase
      * @return  TestDao
      */
     public abstract function testDao(): TestDao;
+
+  
 }

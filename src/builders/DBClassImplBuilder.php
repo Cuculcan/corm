@@ -29,34 +29,31 @@ class DBClassImplBuilder
     private $codeDir;
 
 
-    /**
-     * @var string
-     */
-    private $dbClass;
+   
+
 
     private $_phpFile;
 
     private $_namespace;
 
+    
 
-    public function __construct($codeDir, $dbClass)
+    public function __construct($codeDir)
     {
         $this->parser =  new Parser();
         $this->codeDir = $codeDir;
-        $this->dbClass = $dbClass;
+      
+      
     }
 
-    public function build()
+    public function build($dbClassInfo)
     {
-
-
-        $classInfo = $this->parser->parseClassname($this->dbClass);
 
         $this->_phpFile = new PhpFile;
         $this->_phpFile->addComment('This file is auto-generated.');
-        $this->_namespace =  $this->_phpFile->addNamespace($classInfo['namespace'] . "\\Impl");
-        $class = $this->_namespace->addClass($classInfo['class_name'] . "_impl")
-            ->setExtends($this->dbClass);
+        $this->_namespace =  $this->_phpFile->addNamespace($dbClassInfo->namespace . "\\Impl");
+        $class = $this->_namespace->addClass( $dbClassInfo->className . "_impl")
+            ->setExtends($dbClassInfo->fullName);
 
 
         $method = $class->addMethod('__construct')
@@ -66,10 +63,8 @@ class DBClassImplBuilder
         $method->addParameter('connection_params');
 
 
-        $dbClassInfo = $this->parser->parseDatabaseClass($this->dbClass);
         $this->generateDaoAccessMetods($dbClassInfo, $class);
-
-        $this->save($classInfo['class_name'] . "_impl.php");
+        $this->save($dbClassInfo->className . "_impl.php");
     }
 
     private function save(string $file_name)
@@ -93,23 +88,23 @@ class DBClassImplBuilder
         }
     }
 
-    private function generateDaoGetterMethod(DaoGetter $daoGetterMethod, ClassType $class)
+    private function generateDaoGetterMethod(DaoGetter $daoGetterMethod, ClassType $classImpl)
     {
-        $returnTypeInfo  = $this->parser->parseDaoClassName($daoGetterMethod->returnType);
+        $returnTypeInfo  = $daoGetterMethod->returnTypeInfo;
 
         $implClassName = $returnTypeInfo['class_name'] . "_impl";
         $implClassNameFull = $returnTypeInfo['namespace'] . "\\Impl\\" . $returnTypeInfo['dao_name'] . "\\" . $implClassName;
 
-        echo $implClassNameFull . "\n";
+      //  echo $implClassNameFull . "\n";
 
         $this->_namespace->addUse($implClassNameFull);
 
         $daoVarName = '_' . $implClassName;
-        $class->addProperty($daoVarName, null)
+        $classImpl->addProperty($daoVarName, null)
             ->setVisibility('private')
             ->addComment('@var ' . $implClassName);
 
-        $method = $class->addMethod($daoGetterMethod->name)
+        $method = $classImpl->addMethod($daoGetterMethod->name)
             ->setVisibility('public')
             ->setReturnType($daoGetterMethod->returnType);
 
@@ -117,7 +112,7 @@ class DBClassImplBuilder
 if($this->' . $daoVarName . ' != null){
     return $this->' . $daoVarName . ';
 }
-$this->' . $daoVarName . ' = new ' . $implClassName . '();
+$this->' . $daoVarName . ' = new ' . $implClassName . '( $this );
 
 return  $this->' . $daoVarName . ';
 ';

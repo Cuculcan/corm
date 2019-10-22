@@ -1,9 +1,13 @@
-<?php 
+<?php
 
 namespace Corm\Base;
 
-abstract class CormDatabase {
+abstract class CormDatabase
+{
 
+    /**
+     * @var \PDO
+     */
     protected $db;
 
     public function __construct($connection_params)
