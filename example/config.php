@@ -8,7 +8,7 @@ class Config {
         'host' => 'localhost',
         'user' => 'root',
         'password' => '1234',
-        'dbname' => 'farpost_bot'
+        'dbname' => 'corm_db'
     ];
 
 }

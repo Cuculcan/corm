@@ -57,10 +57,9 @@ class DaoClassImplBuilder
             ->setTypeHint('Corm\\Base\\CormDatabase');
 
 
+        $this->generateMethodsImpl($daoModel, $class);
         // $this->generateDaoAccessMetods($dbClassInfo, $class);
         $this->save($daoModel->classNameInfo['class_name'] . "_impl.php");
-
-      
     }
 
     private function save(string $file_name)
@@ -74,5 +73,16 @@ class DaoClassImplBuilder
         $printer = new PsrPrinter;
         fwrite($codeFile, $printer->printFile($this->_phpFile));
         fclose($codeFile);
+    }
+
+    private function generateMethodsImpl(DaoClassModel $daoModel, ClassType $classImpl)
+    {
+        foreach ($daoModel->methods as $method) {
+            print_r($method);    
+
+            $method = $classImpl->addMethod($method->name)
+                ->setVisibility('public')
+                ->setBody('return null;');
+        }
     }
 }

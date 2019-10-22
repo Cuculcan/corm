@@ -41,7 +41,7 @@ class ParserTest extends \Codeception\Test\Unit
         $this->assertTrue($result->className == "ExampleDb");
         $this->assertTrue($result instanceof  DBClassModel);
         $this->assertTrue(is_array($result->entities));
-        $this->assertTrue(count($result->entities) == 2);
+        $this->assertTrue(count($result->entities) == 1);
         $this->assertTrue($result->entities_namespace == "Example\Database\Entities");
 
         $this->assertTrue(is_array($result->daoInterfaces));

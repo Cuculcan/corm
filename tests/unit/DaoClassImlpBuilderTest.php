@@ -26,29 +26,29 @@ class DaoClassImlpBuilderTest extends \Codeception\Test\Unit
 
 
 
-    public function testShouldBuldDaoImplementationClass()
-    {
-        $codeDir = __DIR__ . '/../../example/database';
+    // public function testShouldBuldDaoImplementationClass()
+    // {
+    //     $codeDir = __DIR__ . '/../../example/database';
 
-        $expectedDBFile = $codeDir.'/impl/dao/TestDao_impl.php';
-        if (file_exists($expectedDBFile)) {
-            unlink($expectedDBFile);
-        }
+    //     $expectedDBFile = $codeDir.'/impl/dao/TestDao_impl.php';
+    //     if (file_exists($expectedDBFile)) {
+    //         unlink($expectedDBFile);
+    //     }
 
-        $builder = new DaoClassImplBuilder($codeDir);
+    //     $builder = new DaoClassImplBuilder($codeDir);
 
-        $daoModel = new  DaoClassModel();
-        $daoModel->fullName = 'Example\\Database\\Dao\\TestDao';
-        $daoModel->classNameInfo = [
-            'class_name'=>'TestDao',
-            'namespace' =>'Example\\Database',
-            'dao_name'  => 'Dao',
-        ];
-        
-        $builder->build($daoModel);
+    //     $daoModel = new  DaoClassModel();
+    //     $daoModel->fullName = 'Example\\Database\\Dao\\TestDao';
+    //     $daoModel->classNameInfo = [
+    //         'class_name'=>'TestDao',
+    //         'namespace' =>'Example\\Database',
+    //         'dao_name'  => 'Dao',
+    //     ];
 
-        $this->assertTrue(file_exists($expectedDBFile));
-    }
+    //     $builder->build($daoModel);
+
+    //     $this->assertTrue(file_exists($expectedDBFile));
+    // }
 
 
 

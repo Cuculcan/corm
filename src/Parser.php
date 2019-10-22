@@ -4,11 +4,12 @@ namespace Corm;
 
 use Corm\Exceptions\ClassNotFoundException;
 use Corm\Exceptions\BadParametersException;
+use Corm\Models\DaoClassMethodModel;
 use Corm\Models\DaoClassModel;
 use Corm\Models\DBClassModel;
 use phpDocumentor\Reflection\DocBlockFactory;
 use Corm\Models\DaoGetter;
-
+use phpDocumentor\Reflection\Types\Array_;
 
 class Parser
 {
@@ -161,7 +162,59 @@ class Parser
         $daoClass->fullName = $daoClassName;
         $daoClass->classNameInfo = $classNameInfo;
 
-        return $daoClass;
+        $classRef = new \ReflectionClass($daoClassName);
+        //$comment = $dbClassRef->getDocComment();
 
+        $methods = $classRef->getMethods();
+        //print_r($methods);
+
+        $factory  = DocBlockFactory::createInstance();
+
+        foreach ($methods as $method) {
+            $methodModel = new DaoClassMethodModel();
+
+            $methodModel->name =  $method->getName();
+            $docComment =  $method->getDocComment();
+
+
+            $docblock = $factory->create($docComment);
+
+            $returnTag = $docblock->getTagsByName('return');
+            if ($returnTag == null) {
+                throw new BadParametersException("Missing Tag @return.\n return type is mandatory");
+            }
+
+            if ($returnTag[0]->gettype() instanceof Array_) {
+                $methodModel->isReturnArray = true;
+                $methodModel->returnType = $returnTag[0]->gettype()->getValueType()->__toString();
+            } else {
+                $methodModel->returnType =  $returnTag[0]->gettype()->__toString();
+            }
+
+            $query = $docblock->getTagsByName('query');
+            if ($query != null) {
+                $re = '/\((\s*.*\s*)?\)/m';
+               
+                preg_match_all($re, $query[0], $matches, PREG_SET_ORDER, 0);
+
+                // Print the entire match result
+                if (count($matches) == 0) {
+                    throw new BadParametersException("missing query code");
+                }
+        
+                if (count($matches[0]) < 2) {
+                    throw new BadParametersException("missing query code ");
+                }
+
+                $methodModel->query = $matches[0][1];
+
+                $methodModel->query;
+            }
+
+            $daoClass->methods[] = $methodModel;
+        }
+
+
+        return $daoClass;
     }
 }

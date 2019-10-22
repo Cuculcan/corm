@@ -17,4 +17,14 @@ class TestDao_impl implements \Example\Database\Dao\TestDao
     {
         $this->_db = $db;
     }
+
+    public function getAll()
+    {
+        return null;
+    }
+
+    public function getById()
+    {
+        return null;
+    }
 }

@@ -2,11 +2,16 @@
 
 namespace Corm\Models;
 
+use Corm\Models\DaoClassMethodModel;
+
 class DaoClassModel 
 {
     public $fullName;
 
     public $classNameInfo;
 
-    public $methods;
+    /**
+     * @var DaoClassMethodModel[]
+     */
+    public $methods = [];
 }

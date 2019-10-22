@@ -8,8 +8,7 @@ use Corm\Base\CormDatabase;
 
 /**
  * @database(entities={
- *      TestModel,
- *      TestModel2,
+ *      Model1,
  * }, namespace = Example\Database\Entities)
  */
 abstract class ExampleDb extends CormDatabase
