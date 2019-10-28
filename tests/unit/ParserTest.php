@@ -9,7 +9,7 @@ use Corm\Parser;
 use Corm\Models\DBClassModel;
 use Corm\Models\DaoGetter;
 use Corm\Models\DaoClassModel;
-
+use Corm\Models\EntityModel;
 
 class ParserTest extends \Codeception\Test\Unit
 {
@@ -42,7 +42,7 @@ class ParserTest extends \Codeception\Test\Unit
         $this->assertTrue($result instanceof  DBClassModel);
         $this->assertTrue(is_array($result->entities));
         $this->assertTrue(count($result->entities) == 1);
-        $this->assertTrue($result->entities_namespace == "Example\Database\Entities");
+        $this->assertTrue($result->entities[0] instanceof EntityModel);
 
         $this->assertTrue(is_array($result->daoInterfaces));
         $this->assertTrue(count($result->daoInterfaces) == 1);

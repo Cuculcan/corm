@@ -3,6 +3,9 @@
 namespace Corm\Models;
 
 use Corm\Models\DaoGetter;
+
+use Corm\Models\EntityModel;
+
 class DBClassModel
 {
 
@@ -22,9 +25,10 @@ class DBClassModel
      */
     public $className;
 
+    /**
+     * @var EntityModel;
+     */
     public $entities;
-
-    public $entities_namespace;
 
     /**
      * @var DaoGetter[]

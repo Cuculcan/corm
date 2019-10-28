@@ -9,6 +9,8 @@ use Corm\Models\DaoClassModel;
 use Corm\Models\DBClassModel;
 use phpDocumentor\Reflection\DocBlockFactory;
 use Corm\Models\DaoGetter;
+use Corm\Models\EntityModel;
+use Corm\Utils\DocCommentUtils;
 use phpDocumentor\Reflection\Types\Array_;
 
 class Parser
@@ -36,8 +38,10 @@ class Parser
             throw new BadParametersException("Tag @database not found");
         }
 
-        $model->entities = $this->parseEntitiesBlock($databaseTag[0]);
-        $model->entities_namespace =  $this->parseEntitiesNamespaceBlock($databaseTag[0]);
+        $entitiesNames = $this->parseEntitiesBlock($databaseTag[0]);
+        $entitiesNnamespace =  DocCommentUtils::getBlocValue($databaseTag[0], 'namespace');
+
+        $model->entities = $this->parseEntities($entitiesNames, $entitiesNnamespace);
 
         $model->daoInterfaces = $this->parseDaoInterfaces($databaseClass);
 
@@ -103,23 +107,6 @@ class Parser
         }
 
         return $filteredEntities;
-    }
-
-    private function parseEntitiesNamespaceBlock($bloc)
-    {
-        $re = '/namespace\s*=\s*(.*)?[\)|\s]/m';
-
-        preg_match_all($re, $bloc, $matches, PREG_SET_ORDER, 0);
-
-        if (count($matches) == 0) {
-            throw new BadParametersException("missing block \"namespace\"");
-        }
-
-        if (count($matches[0]) < 2) {
-            throw new BadParametersException("missing block \"namespace\" ");
-        }
-
-        return trim($matches[0][1]);
     }
 
     private function parseDaoInterfaces($databaseClass)
@@ -216,5 +203,20 @@ class Parser
 
 
         return $daoClass;
+    }
+ 
+    public function parseEntities(array $entitiesNames, string $entitiesNnamespace ){
+     
+        $entities = [];
+        foreach($entitiesNames as $entityName){
+            $entModel = new EntityModel();
+            $entModel->className = $entityName;
+            $entModel->namespace = $entitiesNnamespace;
+            
+            //todo parse entries
+            $entities [] = $entModel;
+        }
+
+        return $entities;
     }
 }

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Example\Database\Entities;
 
@@ -8,25 +8,30 @@ namespace Example\Database\Entities;
 class Model1
 {
     /**
-     * @ColumnInfo(name = "id")
+     * @column_info(name = id)
      * @var integer
      */
     private $id;
 
     /**
-     * @ColumnInfo(name = "name")
+     * @column_info(name = name)
      * @var string
      */
     private $name;
 
     /**
-     * @ColumnInfo(name = "value")
+     * @column_info(name = value)
      * @var string
      */
     private $value;
 
+    /**
+     * Поле без привязки к таблице
+     * @var ololo pew-pew-prpew dsdfsdf
+     */
+    private $extra_value;
+
+
     public function __construc($id, $name, $value)
-    {
-        
-    }
+    { }
 }
