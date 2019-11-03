@@ -32,7 +32,9 @@ class Builder
         $dBclassBuilder  = new DBClassImplBuilder($codeDir);
         $dBclassBuilder->build($dbClassInfo);
 
-        $daoBuilder = new DaoClassImplBuilder($codeDir);
+        $entities = $dbClassInfo->getEntitiesMap();
+
+        $daoBuilder = new DaoClassImplBuilder($codeDir, $entities);
        
         foreach($dbClassInfo->daoInterfaces as $dao){
             $daoClassInfo = $this->parser->parseDaoClass($dao->returnType);

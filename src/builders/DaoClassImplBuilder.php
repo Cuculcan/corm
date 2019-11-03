@@ -3,6 +3,7 @@
 namespace Corm\Builders;
 
 use Corm\Models\DaoClassModel;
+use Corm\Models\EntityModel;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PsrPrinter;
 use Nette\PhpGenerator\PhpFile;
@@ -26,9 +27,16 @@ class DaoClassImplBuilder
      */
     private $_namespace;
 
-    public function __construct($codeDir)
+    /**
+     * @var EntityModel[]
+     */
+    private $entitiesMap;
+
+
+    public function __construct($codeDir, $entitiesMap)
     {
         $this->codeDir = $codeDir;
+        $this->entitiesMap = $entitiesMap;
     }
 
     /**

@@ -26,7 +26,7 @@ class DBClassModel
     public $className;
 
     /**
-     * @var EntityModel;
+     * @var EntityModel[];
      */
     public $entities;
 
@@ -34,4 +34,20 @@ class DBClassModel
      * @var DaoGetter[]
      */
     public $daoInterfaces;
+
+    private $entitiesMap = null;
+
+    public function getEntitiesMap() {
+
+        if($this->entitiesMap != null){
+            return $this->entitiesMapl;
+        }
+
+        $entMap = [];
+        foreach ($this->entities as $entity){
+            $entMap[$entity->namespace.'\\'.$entity->className] = $entity;
+        }
+        $this->entitiesMapl = $entMap;
+        return $this->entitiesMap;
+    }
 }
