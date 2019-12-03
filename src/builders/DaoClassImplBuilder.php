@@ -3,6 +3,7 @@
 namespace Corm\Builders;
 
 use Corm\Models\DaoClassModel;
+use Corm\Models\EntityModel;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PsrPrinter;
 use Nette\PhpGenerator\PhpFile;
@@ -34,7 +35,7 @@ class DaoClassImplBuilder
     /**
      * @param DaoClassModel daoModel
      */
-    public function build(DaoClassModel $daoModel)
+    public function build(DaoClassModel $daoModel, array $entities)
     {
         $this->_phpFile = new PhpFile;
         $this->_phpFile->addComment('This file is auto-generated.');
@@ -57,7 +58,7 @@ class DaoClassImplBuilder
             ->setTypeHint('Corm\\Base\\CormDatabase');
 
 
-        $this->generateMethodsImpl($daoModel, $class);
+        $this->generateMethodsImpl($daoModel, $class, $entities);
         // $this->generateDaoAccessMetods($dbClassInfo, $class);
         $this->save($daoModel->classNameInfo['class_name'] . "_impl.php");
     }
@@ -75,14 +76,67 @@ class DaoClassImplBuilder
         fclose($codeFile);
     }
 
-    private function generateMethodsImpl(DaoClassModel $daoModel, ClassType $classImpl)
+    private function generateMethodsImpl(DaoClassModel $daoModel, ClassType $classImpl, array $entities)
     {
-        foreach ($daoModel->methods as $method) {
-            print_r($method);    
+        foreach ($daoModel->methods as $methodMeta) {
+            print_r($methodMeta);
 
-            $method = $classImpl->addMethod($method->name)
-                ->setVisibility('public')
-                ->setBody('return null;');
+            $methodImpl = $classImpl->addMethod($methodMeta->name)
+                ->setVisibility('public');
+
+            if ($methodMeta->query == null || $methodMeta->query == "") {
+                $methodImpl->setBody('return null;');
+                continue;
+            }
+
+            $returnType = trim($methodMeta->returnType, '\\');
+            if (array_key_exists($returnType, $entities)) {
+                $returnType = $entities[$returnType];
+            }
+
+
+            $body = ' $query = \'' . trim($methodMeta->query) . '\' ;
+            $command = $this->_db->createCommand($query, ' . $this->printArray($methodMeta->parameters) . ');
+
+            $result = $command->queryAll();
+            if (!$result || count($result) == 0) {
+                return [];
+            }
+            $data = [];
+            foreach ($result as $row) {            ';
+
+            if ($returnType instanceof EntityModel) {
+                $body .= $this->generateQueryResultArray($returnType);
+            }
+            $body .= '
+            }
+            return null;
+            ';
+
+            $methodImpl->setBody($body);
         }
+    }
+    private function printArray($parameters)
+    {
+        $txt = '[';
+        foreach ($parameters as $key => $value) {
+            $txt .= "\n'$key'=>'$value'\n";
+        }
+        $txt .= ']';
+
+        return $txt;
+    }
+
+    private function generateQueryResultArray(EntityModel $returnType)
+    {
+
+        $body = '$item = new ' . $returnType->getFullClassName() . '(';
+        foreach ($returnType->fields as $field) {
+            $body .= ' $row[' . $field->columnName . '],';
+        }
+        $body .= ');
+        $data[] = $item;
+        ';
+        return $body;
     }
 }

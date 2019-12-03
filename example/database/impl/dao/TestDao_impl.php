@@ -20,11 +20,35 @@ class TestDao_impl implements \Example\Database\Dao\TestDao
 
     public function getAll()
     {
-        return null;
+        $query = 'SELECT * FROM model_1' ;
+                    $command = $this->_db->createCommand($query, []);
+
+                    $result = $command->queryAll();
+                    if (!$result || count($result) == 0) {
+                        return [];
+                    }
+                    $data = [];
+                    foreach ($result as $row) {            $item = new Example\Database\Entities\Model1( $row[id], $row[name], $row[value], $row[],);
+                $data[] = $item;
+
+                    }
+                    return null;
     }
 
     public function getById()
     {
-        return null;
+        $query = 'SELECT * FROM model_1 where id = :id' ;
+                    $command = $this->_db->createCommand($query, []);
+
+                    $result = $command->queryAll();
+                    if (!$result || count($result) == 0) {
+                        return [];
+                    }
+                    $data = [];
+                    foreach ($result as $row) {            $item = new Example\Database\Entities\Model1( $row[id], $row[name], $row[value], $row[],);
+                $data[] = $item;
+
+                    }
+                    return null;
     }
 }

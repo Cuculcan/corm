@@ -12,6 +12,7 @@ use Corm\Models\DaoGetter;
 use Corm\Models\EntityModel;
 use Corm\Utils\DocCommentUtils;
 use phpDocumentor\Reflection\Types\Array_;
+use Corm\EntitiesParser;
 
 class Parser
 {
@@ -207,14 +208,10 @@ class Parser
  
     public function parseEntities(array $entitiesNames, string $entitiesNnamespace ){
      
+        $entityParser = new EntitiesParser();
         $entities = [];
         foreach($entitiesNames as $entityName){
-            $entModel = new EntityModel();
-            $entModel->className = $entityName;
-            $entModel->namespace = $entitiesNnamespace;
-            
-            //todo parse entries
-            $entities [] = $entModel;
+            $entities [] =  $entityParser->parseEntity($entityName, $entitiesNnamespace);
         }
 
         return $entities;

@@ -4,7 +4,8 @@ namespace Corm\Models;
 
 use Corm\Models\FieldModel;
 
-class EntityModel {
+class EntityModel
+{
 
     /**
      * @var string
@@ -27,4 +28,8 @@ class EntityModel {
     public $fields = [];
 
 
+    public function getFullClassName()
+    {
+        return  $this->namespace . '\\' . $this->className;
+    }
 }

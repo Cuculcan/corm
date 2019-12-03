@@ -1,6 +1,7 @@
 <?php
 
 namespace Example\Database\Dao;
+use Example\Database\Entities\Model1;
 
 interface TestDao {
 
