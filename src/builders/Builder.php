@@ -32,7 +32,9 @@ class Builder
         $dBclassBuilder  = new DBClassImplBuilder($codeDir);
         $dBclassBuilder->build($dbClassInfo);
 
-        $daoBuilder = new DaoClassImplBuilder($codeDir);
+        $entities = $dbClassInfo->getEntitiesMap();
+
+        $daoBuilder = new DaoClassImplBuilder($codeDir, $entities);
        
         $entities = $dbClassInfo->getEntitiesMap();
       

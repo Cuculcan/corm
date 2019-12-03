@@ -32,12 +32,12 @@ class ParserTest extends \Codeception\Test\Unit
     {
 
         $parser = new Parser();
-        $result =  $parser->parseDatabaseClass("Example\Database\ExampleDb");
+        $result =  $parser->parseDatabaseClass("Example\\Database\\ExampleDb");
 
         $this->assertTrue($result instanceof  DBClassModel);
 
-        $this->assertTrue($result->fullName == "Example\Database\ExampleDb");
-        $this->assertTrue($result->namespace == "Example\Database");
+        $this->assertTrue($result->fullName == "Example\\Database\\ExampleDb");
+        $this->assertTrue($result->namespace == "Example\\Database");
         $this->assertTrue($result->className == "ExampleDb");
         $this->assertTrue($result instanceof  DBClassModel);
         $this->assertTrue(is_array($result->entities));

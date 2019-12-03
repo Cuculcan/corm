@@ -27,9 +27,16 @@ class DaoClassImplBuilder
      */
     private $_namespace;
 
-    public function __construct($codeDir)
+    /**
+     * @var EntityModel[]
+     */
+    private $entitiesMap;
+
+
+    public function __construct($codeDir, $entitiesMap)
     {
         $this->codeDir = $codeDir;
+        $this->entitiesMap = $entitiesMap;
     }
 
     /**
