@@ -10,7 +10,7 @@ use Corm\Base\CormDatabase;
 
 class TestDao_impl implements \Example\Database\Dao\TestDao
 {
-    /** @var CormDatabase */
+    /** @var \PDO */
     private $_db;
 
     public function __construct(CormDatabase $db)
@@ -21,34 +21,40 @@ class TestDao_impl implements \Example\Database\Dao\TestDao
     public function getAll()
     {
         $query = 'SELECT * FROM model_1' ;
-                    $command = $this->_db->createCommand($query, []);
+        $stm = $this->_db->prepare($query);
+        $stm->execute( );$result = $stm->fetch(\PDO::FETCH_ASSOC);
+        if (!$result || count($result) == 0) {
+        	return [];
+        }
+        $data = [];
+        foreach ($result as $row) {
+        	$item = new \Example\Database\Entities\Model1(
+        		$row['id'],
+        		$row['name'],
+        		$row['value'] );
+            $data[] = $item;
 
-                    $result = $command->queryAll();
-                    if (!$result || count($result) == 0) {
-                        return [];
-                    }
-                    $data = [];
-                    foreach ($result as $row) {            $item = new Example\Database\Entities\Model1( $row[id], $row[name], $row[value], $row[],);
-                $data[] = $item;
-
-                    }
-                    return null;
+        }
+        return $data;
     }
 
     public function getById()
     {
         $query = 'SELECT * FROM model_1 where id = :id' ;
-                    $command = $this->_db->createCommand($query, []);
+        $stm = $this->_db->prepare($query);
+        $stm->execute( );$result = $stm->fetch(\PDO::FETCH_ASSOC);
+        if (!$result || count($result) == 0) {
+        	return null;
+        }
+        $data = [];
+        foreach ($result as $row) {
+        	$item = new \Example\Database\Entities\Model1(
+        		$row['id'],
+        		$row['name'],
+        		$row['value'] );
+            $data[] = $item;
 
-                    $result = $command->queryAll();
-                    if (!$result || count($result) == 0) {
-                        return [];
-                    }
-                    $data = [];
-                    foreach ($result as $row) {            $item = new Example\Database\Entities\Model1( $row[id], $row[name], $row[value], $row[],);
-                $data[] = $item;
-
-                    }
-                    return null;
+        }
+        return $data;
     }
 }

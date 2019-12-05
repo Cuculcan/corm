@@ -40,6 +40,9 @@ class EntitiesParserTest extends \Codeception\Test\Unit
 
         $this->assertTrue(is_array($entity->fields));
         $this->assertTrue($entity->fields[0] instanceof FieldModel);
+
+        $this->assertTrue(is_array($entity->constuctorParams));
+        $this->assertTrue($entity->constuctorParams[0] == "id");
         
     }
 

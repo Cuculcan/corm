@@ -32,7 +32,7 @@ class EntitiesParser
         $classRef = new \ReflectionClass($fullName);
         $entity->tableName = $this->getTableName($classRef);
         $entity->fields = $this->getFields($classRef);
-
+        $entity->constuctorParams = $this->getConstructorParams($classRef);
         return $entity;
     }
 
@@ -87,5 +87,20 @@ class EntitiesParser
         return $model;
     }
 
-  
+
+    private function getConstructorParams(\ReflectionClass $classRef)
+    {
+        $constructor = $classRef->getConstructor();
+        if ($constructor == null) {
+            throw new BadParametersException("Не задан конструктор у объекта $classRef->name");
+        }
+
+        $parameters = [];
+        $constructorParameters = $constructor->getParameters();
+        foreach ($constructorParameters as $param) {
+            $parameters[] = $param->name;
+        }
+        
+        return $parameters;
+    }
 }

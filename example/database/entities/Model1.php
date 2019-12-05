@@ -32,6 +32,6 @@ class Model1
     private $extra_value;
 
 
-    public function __construc($id, $name, $value)
+    public function __construct($id, $name, $value)
     { }
 }

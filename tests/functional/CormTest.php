@@ -21,26 +21,26 @@ class CormTest extends \Codeception\Test\Unit
     }
 
    
-    public function testShouldReturnDatabaseImpl()
-    {
-        $db = Corm::getDatabase("Example\Database\ExampleDb", \Example\Config::db);
-        $this->assertNotNull($db);
-    }
+    // public function testShouldReturnDatabaseImpl()
+    // {
+    //     $db = Corm::getDatabase("Example\Database\ExampleDb", \Example\Config::db);
+    //     $this->assertNotNull($db);
+    // }
 
-    public function testShouldTrowExceptionOnEmptyClassName()
-    {
-        $this->expectException(BadParametersException::class);
-        $db = Corm::getDatabase("");
-    }
+    // public function testShouldTrowExceptionOnEmptyClassName()
+    // {
+    //     $this->expectException(BadParametersException::class);
+    //     $db = Corm::getDatabase("");
+    // }
 
-    public function testShouldReturnDatabaseImplAndTestDaoImp()
-    {
-        $db = Corm::getDatabase("Example\Database\ExampleDb", \Example\Config::db);
-        $this->assertNotNull($db);
+    // public function testShouldReturnDatabaseImplAndTestDaoImp()
+    // {
+    //     $db = Corm::getDatabase("Example\Database\ExampleDb", \Example\Config::db);
+    //     $this->assertNotNull($db);
 
-        $testDao = $db->testDao();
-        $this->assertNotNull($testDao);
-    }
+    //     $testDao = $db->testDao();
+    //     $this->assertNotNull($testDao);
+    // }
 
 
 }

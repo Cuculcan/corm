@@ -7,7 +7,7 @@ class Config {
     const db = [
         'host' => 'localhost',
         'user' => 'root',
-        'password' => '',
+        'password' => '1234',
         'dbname' => 'corm_db'
     ];
 

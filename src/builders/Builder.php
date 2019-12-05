@@ -36,8 +36,6 @@ class Builder
 
         $daoBuilder = new DaoClassImplBuilder($codeDir, $entities);
        
-        $entities = $dbClassInfo->getEntitiesMap();
-      
 
         foreach($dbClassInfo->daoInterfaces as $daoGetInterface){
             $daoClassInfo = $this->parser->parseDaoClass($daoGetInterface->returnType);

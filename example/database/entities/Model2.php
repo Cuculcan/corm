@@ -25,7 +25,7 @@ class Model2
      */
     private $value;
 
-    public function __construc($id, $name, $value)
+    public function __construct($id, $name, $value)
     {
         
     }

@@ -3,7 +3,6 @@
 namespace Example\Database;
 
 use Example\Database\Dao\TestDao;
-use Example\Database\Dao\TestDao2;
 use Corm\Base\CormDatabase;
 
 /**
