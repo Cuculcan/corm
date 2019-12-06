@@ -66,4 +66,13 @@ class ParserTest extends \Codeception\Test\Unit
         $this->assertTrue($daoInfo instanceof  DaoClassModel);
 
     }
+
+    
+    public function testShouldParseDaoMethods()
+    {
+        $parser = new Parser();
+        $daoInfo = $parser->parseDaoClass('Example\Database\Dao\TestDao');
+        $this->assertTrue(count($daoInfo->methods) > 0);
+        
+    }
 }

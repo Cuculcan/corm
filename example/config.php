@@ -2,7 +2,8 @@
 
 namespace Example;
 
-class Config {
+class Config
+{
 
     const db = [
         'host' => 'localhost',
@@ -10,5 +11,4 @@ class Config {
         'password' => '1234',
         'dbname' => 'corm_db'
     ];
-
 }

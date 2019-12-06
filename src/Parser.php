@@ -13,6 +13,7 @@ use Corm\Models\EntityModel;
 use Corm\Utils\DocCommentUtils;
 use phpDocumentor\Reflection\Types\Array_;
 use Corm\EntitiesParser;
+use Corm\Models\MethodParameter;
 
 class Parser
 {
@@ -159,61 +160,93 @@ class Parser
         $factory  = DocBlockFactory::createInstance();
 
         foreach ($methods as $method) {
-            $methodModel = new DaoClassMethodModel();
-
-            $methodModel->name =  $method->getName();
-            $docComment =  $method->getDocComment();
 
 
-            $docblock = $factory->create($docComment);
-
-            $returnTag = $docblock->getTagsByName('return');
-            if ($returnTag == null) {
-                throw new BadParametersException("Missing Tag @return.\n return type is mandatory");
-            }
-
-            if ($returnTag[0]->gettype() instanceof Array_) {
-                $methodModel->isReturnArray = true;
-                $methodModel->returnType = $returnTag[0]->gettype()->getValueType()->__toString();
-            } else {
-                $methodModel->returnType =  $returnTag[0]->gettype()->__toString();
-            }
-
-            $query = $docblock->getTagsByName('query');
-            if ($query != null) {
-                $re = '/\((\s*.*\s*)?\)/m';
-               
-                preg_match_all($re, $query[0], $matches, PREG_SET_ORDER, 0);
-
-                // Print the entire match result
-                if (count($matches) == 0) {
-                    throw new BadParametersException("missing query code");
-                }
-        
-                if (count($matches[0]) < 2) {
-                    throw new BadParametersException("missing query code ");
-                }
-
-                $methodModel->query = $matches[0][1];
-
-                $methodModel->query;
-            }
-
-            $daoClass->methods[] = $methodModel;
+            $daoClass->methods[] = $this->parseMethod($method, $factory);
         }
 
 
         return $daoClass;
     }
- 
-    public function parseEntities(array $entitiesNames, string $entitiesNnamespace ){
-     
+
+    public function parseEntities(array $entitiesNames, string $entitiesNnamespace)
+    {
+
         $entityParser = new EntitiesParser();
         $entities = [];
-        foreach($entitiesNames as $entityName){
-            $entities [] =  $entityParser->parseEntity($entityName, $entitiesNnamespace);
+        foreach ($entitiesNames as $entityName) {
+            $entities[] =  $entityParser->parseEntity($entityName, $entitiesNnamespace);
         }
 
         return $entities;
+    }
+
+    /**
+     * @var \ReflectionMethod $method
+     * @var DocBlockFactory $factory
+     * 
+     * @return DaoClassMethodModel
+     */
+    public function parseMethod(\ReflectionMethod $method, DocBlockFactory $factory)
+    {
+        $methodModel = new DaoClassMethodModel();
+
+        $methodModel->name =  $method->getName();
+        $docComment =  $method->getDocComment();
+        $methodModel->parameters = [];
+        foreach ($method->getParameters() as $param) {
+
+          
+           echo "\n=====================================\n";
+           var_dump($param-> name);
+           var_dump($param-> getClass());
+           var_dump($param->isArray());
+          
+            //print_r($param->getClass());
+            // $parameter = new MethodParameter();
+            // $parameter->name =  $param->name;
+            // $parameter->type = $param->getType()->name;
+            // $parameter->isArray = $param->isArray();
+            // $parameter->defaultValue = $param->getDefaultValue();
+
+            // $methodModel->parameters[] = $param->name;
+        }
+
+        if ($docComment == null) {
+            throw new BadParametersException("Missing Annotations in docComents");
+        }
+        $docblock = $factory->create($docComment);
+
+        $returnTag = $docblock->getTagsByName('return');
+        if ($returnTag == null) {
+            $methodModel->returnType = null;
+        } else if ($returnTag[0]->gettype() instanceof Array_) {
+            $methodModel->isReturnArray = true;
+            $methodModel->returnType = $returnTag[0]->gettype()->getValueType()->__toString();
+        } else {
+            $methodModel->returnType =  $returnTag[0]->gettype()->__toString();
+        }
+
+        $query = $docblock->getTagsByName('query');
+        if ($query != null) {
+            $re = '/\((\s*.*\s*)?\)/m';
+
+            preg_match_all($re, $query[0], $matches, PREG_SET_ORDER, 0);
+
+            // Print the entire match result
+            if (count($matches) == 0) {
+                throw new BadParametersException("missing query code");
+            }
+
+            if (count($matches[0]) < 2) {
+                throw new BadParametersException("missing query code ");
+            }
+
+            $methodModel->query = $matches[0][1];
+
+            $methodModel->query;
+        }
+
+        return $methodModel;
     }
 }

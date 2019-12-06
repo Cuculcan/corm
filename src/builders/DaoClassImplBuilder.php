@@ -9,7 +9,7 @@ use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PsrPrinter;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PhpNamespace;
-
+use Corm\Builders\Methods\MethodBuilderFactory;
 
 class DaoClassImplBuilder
 {
@@ -56,7 +56,7 @@ class DaoClassImplBuilder
 
         $class->addProperty('_db')
             ->setVisibility('private')
-            ->addComment('@var \PDO');
+            ->addComment('@var CormDatabase');
 
         $method = $class->addMethod('__construct')
             ->setVisibility('public')
@@ -83,104 +83,30 @@ class DaoClassImplBuilder
         fclose($codeFile);
     }
 
+    /*
+    TODO: generate
+    - INSERT (MODEL) && INSERT ([models]) 
+    - UPDATE (MODEL) && UPDATE (MODEL, [fields])
+    - DELETE (MODEL)
+    - methods like count(*)
+    - RAW QUERY
+    */
     private function generateMethodsImpl(DaoClassModel $daoModel, ClassType $classImpl, array $entities)
     {
+        
         foreach ($daoModel->methods as $methodMeta) {
-            // print_r($methodMeta);
 
             $methodImpl = $classImpl->addMethod($methodMeta->name)
                 ->setVisibility('public');
 
-            if ($methodMeta->query == null || $methodMeta->query == "") {
-                $methodImpl->setBody('return null;');
-                continue;
+            foreach ($methodMeta->parameters as $param) {
+                $methodImpl->addParameter($param->name);
             }
 
-            $body = '$query = \'' . trim($methodMeta->query) . '\' ;
-$stm = $this->_db->prepare($query);
-$stm->execute( ' . (empty($methodMeta->parameters) ? '' : $this->printArray($methodMeta->parameters)) . ');';
-
-            $resultBuilder  = null;
-
-            $returnType = trim($methodMeta->returnType, "\\");
-            if (array_key_exists($returnType, $entities)) {
-
-                $returnType = $entities[$returnType];
-
-                if ($methodMeta->isReturnArray) {
-                    $resultBuilder = new QueryResultBuilderEntitiesArray();
-                } else {
-                    $resultBuilder = new QueryResultBuilderEntity();
-                }
-            };
-
-
-
-
-            //             $body .= '$result = $stm->fetch(\PDO::FETCH_ASSOC);
-            // if (!$result || count($result) == 0) {';
-
-            //             if ($methodMeta->isReturnArray) {
-            //                 $body .= "\n\treturn [];\n";
-            //             } else {
-            //                 $body .= "\n\treturn null;\n";
-            //             }
-
-            //             $body .= '}
-            // $data = [];
-            // foreach ($result as $row) {            ';
-
-
-
-            //             //var_dump($returnType);
-            //             if ($returnType instanceof EntityModel) {
-            //                 $body .= $this->generateQueryResultArray($returnType);
-            //                 $body .= '
-            // }
-            // return $data;
-            // ';
-            //             }
-
-
+            $methodBodyBuilder = MethodBuilderFactory::getMethodBodyBuilder($methodMeta, $entities);
+            $body = $methodBodyBuilder->build();
 
             $methodImpl->setBody($body);
         }
-    }
-    private function printArray($parameters)
-    {
-        $txt = '[';
-        foreach ($parameters as $key => $value) {
-            $txt .= "\n'$key'=>'$value'\n";
-        }
-        $txt .= ']';
-
-        return $txt;
-    }
-
-    private function generateQueryResultArray(EntityModel $returnType)
-    {
-
-        $body = "\n\t\$item = new \\" . $returnType->getFullClassName() . "(\n";
-
-        $paramArray = [];
-        foreach ($returnType->constuctorParams as $parameterName) {
-
-
-            $entityField = $returnType->getFieldByName($parameterName);
-            if ($entityField == null) {
-                throw new BadParametersException("Не найден параметр конструктора " . $parameterName);
-            }
-            //print_r($entityField);
-            if ($entityField->columnName == null || $entityField->columnName == "") {
-                throw new BadParametersException("[$returnType->className] Constructor param '" . $parameterName . "' is not database column");
-            }
-
-            $paramArray[] = '$row[\'' . $entityField->columnName . '\']';
-        }
-        $body .= "\t\t" . implode(",\n\t\t", $paramArray);
-        $body .= " );
-    \$data[] = \$item;
-        ";
-        return $body;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Corm\Models;
 
+use Corm\Models\MethodParameter;
+
 class DaoClassMethodModel
 {
     public $name;
@@ -15,6 +17,8 @@ class DaoClassMethodModel
      */
     public $isReturnArray = false;
 
-
+    /**
+     * @var MethodParameter[]
+     */
     public $parameters = [];
 }

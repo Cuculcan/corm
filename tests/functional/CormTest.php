@@ -2,8 +2,7 @@
 
 use Corm\Corm;
 use Corm\Exceptions\BadParametersException;
-use Example\Database\Test;
-use Symfony\Component\Console\Output\ConsoleOutput;
+use Example\Database\Entities\Model1;
 
 class CormTest extends \Codeception\Test\Unit
 {
@@ -42,5 +41,36 @@ class CormTest extends \Codeception\Test\Unit
     //     $this->assertNotNull($testDao);
     // }
 
+    // public function testShouldGetAllData()
+    // {
+    //     $db = Corm::getDatabase("Example\Database\ExampleDb", \Example\Config::db);
+    //     $this->assertNotNull($db);
+
+    //     $testDao = $db->testDao();
+    //     $this->assertNotNull($testDao);
+
+    //     $res = $testDao->getAll();
+    //     $this->assertNotNull($res);
+
+    //     $this->assertTrue(is_array($res));
+    //     $this->assertTrue($res[0] instanceof Model1);
+
+    // }
+
+    // public function testShouldGetById()
+    // {
+    //     $db = Corm::getDatabase("Example\Database\ExampleDb", \Example\Config::db);
+    //     $this->assertNotNull($db);
+
+    //     $testDao = $db->testDao();
+    //     $this->assertNotNull($testDao);
+
+    //     $res = $testDao->getById(1);
+    //     $this->assertNotNull($res);
+
+    //     $this->assertTrue($res instanceof Model1);
+    //     $this->assertTrue($res->getId() == 1);
+       
+    // }
 
 }
