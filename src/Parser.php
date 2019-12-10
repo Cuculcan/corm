@@ -14,6 +14,9 @@ use Corm\Utils\DocCommentUtils;
 use phpDocumentor\Reflection\Types\Array_;
 use Corm\EntitiesParser;
 use Corm\Models\MethodParameter;
+use phpDocumentor\Reflection\DocBlock;
+
+use ReflectionParameter;
 
 class Parser
 {
@@ -189,64 +192,143 @@ class Parser
      */
     public function parseMethod(\ReflectionMethod $method, DocBlockFactory $factory)
     {
-        $methodModel = new DaoClassMethodModel();
-
-        $methodModel->name =  $method->getName();
         $docComment =  $method->getDocComment();
-        $methodModel->parameters = [];
-        foreach ($method->getParameters() as $param) {
-
-          
-           echo "\n=====================================\n";
-           var_dump($param-> name);
-           var_dump($param-> getClass());
-           var_dump($param->isArray());
-          
-            //print_r($param->getClass());
-            // $parameter = new MethodParameter();
-            // $parameter->name =  $param->name;
-            // $parameter->type = $param->getType()->name;
-            // $parameter->isArray = $param->isArray();
-            // $parameter->defaultValue = $param->getDefaultValue();
-
-            // $methodModel->parameters[] = $param->name;
-        }
-
         if ($docComment == null) {
-            throw new BadParametersException("Missing Annotations in docComents");
+            throw new BadParametersException("Missing docComents");
         }
+
+        $methodModel = new DaoClassMethodModel();
+        $methodModel->name =  $method->getName();
+
         $docblock = $factory->create($docComment);
 
-        $returnTag = $docblock->getTagsByName('return');
-        if ($returnTag == null) {
-            $methodModel->returnType = null;
-        } else if ($returnTag[0]->gettype() instanceof Array_) {
-            $methodModel->isReturnArray = true;
-            $methodModel->returnType = $returnTag[0]->gettype()->getValueType()->__toString();
-        } else {
-            $methodModel->returnType =  $returnTag[0]->gettype()->__toString();
-        }
+        $returnInfo = $this->getMethodReturnInfo($docblock);
+        $methodModel->isReturnArray = $returnInfo[0];
+        $methodModel->returnType = $returnInfo[1];
 
-        $query = $docblock->getTagsByName('query');
-        if ($query != null) {
-            $re = '/\((\s*.*\s*)?\)/m';
+        $methodModel->query = $this->getMethodQueryAnnotation($docblock);
 
-            preg_match_all($re, $query[0], $matches, PREG_SET_ORDER, 0);
-
-            // Print the entire match result
-            if (count($matches) == 0) {
-                throw new BadParametersException("missing query code");
-            }
-
-            if (count($matches[0]) < 2) {
-                throw new BadParametersException("missing query code ");
-            }
-
-            $methodModel->query = $matches[0][1];
-
-            $methodModel->query;
-        }
+        $methodModel->parameters = $this->getMethodParameters($method->getParameters(), $docblock);
+        
+        $methodModel->special = $this->checkIsSpecialMethod($docblock);
 
         return $methodModel;
+    }
+
+    private function getMethodReturnInfo(DocBlock $docBlock)
+    {
+        $returnTag = $docBlock->getTagsByName('return');
+        if ($returnTag == null) {
+            return [false, null];
+        }
+
+        if ($returnTag[0]->gettype() instanceof Array_) {
+            return [true, $returnTag[0]->gettype()->getValueType()->__toString()];
+        }
+
+        return [false,  $returnTag[0]->gettype()->__toString()];
+    }
+
+    private function getMethodQueryAnnotation(DocBlock $docBlock)
+    {
+        $query = $docBlock->getTagsByName('query');
+        if ($query == null) {
+            return null;
+        }
+
+        $re = '/\((\s*.*\s*)?\)/m';
+
+        preg_match_all($re, $query[0], $matches, PREG_SET_ORDER, 0);
+
+        // Print the entire match result
+        if (count($matches) == 0) {
+            throw new BadParametersException("missing query code");
+        }
+
+        if (count($matches[0]) < 2) {
+            throw new BadParametersException("missing query code ");
+        }
+
+        return  $matches[0][1];
+    }
+
+    private function checkIsSpecialMethod(DocBlock $docBlock)
+    {
+        $insert = $docBlock->getTagsByName('insert');
+        if ($insert != null) {
+            return "insert";
+        }
+
+        $update = $docBlock->getTagsByName('update');
+        if ($insert != null) {
+            return "update";
+        }
+
+        $delete = $docBlock->getTagsByName('delete');
+        if ($insert != null) {
+            return "delete";
+        }
+
+        return null;
+
+    }
+
+    private function getMethodParameters($parametersRefl, DocBlock $docBlock)
+    {
+
+        $extraInfo = $this->getMethodParamAnnotation($docBlock);
+        
+        $parameters = [];
+        foreach ($parametersRefl as $param) {
+
+            $parameter = new MethodParameter();
+            $parameter->name =  $param->name;
+
+            if ($param->isDefaultValueAvailable()) {
+                $parameter->defaultValue = $param->getDefaultValue();
+            } else {
+                $parameter->defaultValue = null;
+            }
+            $parameter->type = "plain";
+            $parameter->isArray = false;
+           
+            if(array_key_exists($parameter->name, $extraInfo)){
+                $extra = $extraInfo[$parameter->name];
+                $parameter->type = $extra->type;
+                $parameter->isArray =  $extra->isArray;
+            }
+           
+            $parameters[] = $parameter;
+        }
+
+
+
+        return $parameters;
+    }
+    
+    private function getMethodParamAnnotation(DocBlock $docBlock)
+    {
+        $parametersDoc = $docBlock->getTagsByName('param');
+        if ($parametersDoc == null) {
+            return [];
+        }
+        
+        $parameters = [];
+        foreach ($parametersDoc as $param) {
+
+            $parameter = new MethodParameter();
+            
+            $parameter->name = $param->getVariableName();
+            if ($param->getType() instanceof \phpDocumentor\Reflection\Types\Array_) {
+                $parameter->isArray = true;
+                $parameter->type = $param->getType()->getValueType()->__toString();
+            } else {
+                $parameter->isArray = false;
+                $parameter->type = $param->getType()->__toString();
+            }
+
+            $parameters[$parameter->name] = $parameter;
+        }
+        return $parameters;
     }
 }

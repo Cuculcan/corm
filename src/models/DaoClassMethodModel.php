@@ -21,4 +21,7 @@ class DaoClassMethodModel
      * @var MethodParameter[]
      */
     public $parameters = [];
+
+    
+    public $special = null;
 }

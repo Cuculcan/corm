@@ -85,6 +85,7 @@ class DaoClassImplBuilder
 
     /*
     TODO: generate
+    - get by Array WHERE IN (<>)
     - INSERT (MODEL) && INSERT ([models]) 
     - UPDATE (MODEL) && UPDATE (MODEL, [fields])
     - DELETE (MODEL)
@@ -93,14 +94,18 @@ class DaoClassImplBuilder
     */
     private function generateMethodsImpl(DaoClassModel $daoModel, ClassType $classImpl, array $entities)
     {
-        
+
         foreach ($daoModel->methods as $methodMeta) {
 
             $methodImpl = $classImpl->addMethod($methodMeta->name)
                 ->setVisibility('public');
 
             foreach ($methodMeta->parameters as $param) {
-                $methodImpl->addParameter($param->name);
+                if ($param->defaultValue != null) {
+                    $methodImpl->addParameter($param->name, $param->defaultValue);
+                } else {
+                    $methodImpl->addParameter($param->name);
+                }
             }
 
             $methodBodyBuilder = MethodBuilderFactory::getMethodBodyBuilder($methodMeta, $entities);

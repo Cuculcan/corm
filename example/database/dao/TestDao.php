@@ -21,18 +21,36 @@ interface TestDao {
      *   SELECT * FROM model_1 where id = :id
      * )
      * @param int $id
-     * @param string $ololo
      * 
      * @return Example\Database\Entities\Model1
      */
-    public function getById($id, $ololo);
+    public function getById($id);
+
+
+    //  /**
+    //  * @query(
+    //  *   SELECT * FROM model_1 where id IN (:ids)
+    //  * )
+    //  * @param int[] $ids
+    //  * 
+    //  * @return Example\Database\Entities\Model1
+    //  */
+    // public function getByIds($ids);
 
 
     /**
      * @insert
      * 
-     * @param Example\Database\Entities\Model1[] $models
+     * @param Example\Database\Entities\Model1 $model
      */
-    public function insert(array $models);
+    public function insert($model);
+
+
+    // /**
+    //  * @insert
+    //  * 
+    //  * @param Example\Database\Entities\Model1[] $models
+    //  */
+    // public function insertBatch($models);
 
 }

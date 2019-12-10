@@ -3,7 +3,7 @@
 namespace Corm\Builders\Methods;
 
 use Corm\Builders\Methods\IQueryResultBuilder;
-use Corm\Builders\Methods\MethodBodyBuilder;
+use Corm\Builders\Methods\MethodWithQueryBuilder;
 use Corm\Builders\Methods\QueryResultBuilderEntitiesArray;
 use Corm\Builders\Methods\QueryResultBuilderEntity;
 use Corm\Exceptions\BadParametersException;
@@ -22,6 +22,13 @@ class MethodBuilderFactory
     public static function getMethodBodyBuilder(DaoClassMethodModel $methodMeta,  array $entities)
     {
 
+        switch($methodMeta->special){
+            case "insert":
+                return new InsertMethodBuilder($methodMeta, $entities);
+        }
+
+
+
         $resultType = self::UNDEFINED;
         $returnType = trim($methodMeta->returnType, "\\");
         $returnEntity = null;
@@ -34,6 +41,8 @@ class MethodBuilderFactory
         } else {
             $resultType = ($methodMeta->isReturnArray) ? self::PLAIN : self::PLAIN_ARRAY;
         }
+
+       
 
         $queryResultBuilder = null;
         switch ($resultType) {
@@ -53,6 +62,6 @@ class MethodBuilderFactory
                 throw new BadParametersException("$methodMeta->name undefined return type");
         }
 
-        return new MethodBodyBuilder($queryResultBuilder, $methodMeta);
+        return new MethodWithQueryBuilder($queryResultBuilder, $methodMeta);
     }
 }
