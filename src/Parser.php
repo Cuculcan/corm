@@ -256,6 +256,7 @@ class Parser
     {
         $insert = $docBlock->getTagsByName('insert');
         if ($insert != null) {
+            echo $insert[0]->__toString()."\n";
             return "insert";
         }
 

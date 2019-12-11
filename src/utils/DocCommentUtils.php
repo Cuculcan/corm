@@ -28,6 +28,15 @@ class DocCommentUtils
 
         return  trim(trim($matches[0][0]), "\\");
     }
+    public static function checkTagExist(DocBlock $docblock, $tagName)
+    {
+        $entityTag = $docblock->getTagsByName($tagName);
+        if ($entityTag == null) {
+            return false;
+        }
+
+        return true;
+    }
 
     public static function getTagValueWithkey(DocBlock $docblock, $tagName, $keyName)
     {

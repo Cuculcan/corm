@@ -78,6 +78,8 @@ class EntitiesParser
         } catch (BadParametersException $ex) { }
         $model->columnName = $columnName;
 
+        $model->isAutoincr = DocCommentUtils::checkTagExist($docblock,'autoincr');
+        
         $type = null;
         try {
             $type =  DocCommentUtils::getType($docblock);

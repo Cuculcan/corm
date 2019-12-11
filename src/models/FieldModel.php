@@ -11,4 +11,6 @@ class FieldModel {
 
     public $type;
 
+    public $isAutoincr = false;
+
 }

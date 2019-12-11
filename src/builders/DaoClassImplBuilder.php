@@ -10,6 +10,8 @@ use Nette\PhpGenerator\PsrPrinter;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PhpNamespace;
 use Corm\Builders\Methods\MethodBuilderFactory;
+use Corm\Models\MethodParameter;
+use Nette\PhpGenerator\Method;
 
 class DaoClassImplBuilder
 {
@@ -86,7 +88,11 @@ class DaoClassImplBuilder
     /*
     TODO: generate
     - get by Array WHERE IN (<>)
-    - INSERT (MODEL) && INSERT ([models]) 
+    + INSERT (MODEL) 
+    - INSERT WITH IGNORE attribute
+    + INSERT ([models]) 
+    - INSERT ([models])  WITH IGNORE attribute 
+    - INSERT ([models])  WITH IGNORE attribute AND  ON DUPLICATE KEY UPDATE
     - UPDATE (MODEL) && UPDATE (MODEL, [fields])
     - DELETE (MODEL)
     - methods like count(*)
@@ -106,6 +112,8 @@ class DaoClassImplBuilder
                 } else {
                     $methodImpl->addParameter($param->name);
                 }
+              
+                $this->addParamComment($param, $methodImpl);
             }
 
             $methodBodyBuilder = MethodBuilderFactory::getMethodBodyBuilder($methodMeta, $entities);
@@ -113,5 +121,17 @@ class DaoClassImplBuilder
 
             $methodImpl->setBody($body);
         }
+       
+    }
+
+    private function addParamComment(MethodParameter $param, Method  $methodImpl){
+        $type = "mix";
+        if($param->type != null && $param->type != "plain"){
+            $type = $param->type ;
+        }
+        if($param->isArray){
+            $type.="[]";
+        }
+        $methodImpl->addComment("@param $type \$$param->name" );
     }
 }

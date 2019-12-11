@@ -8,28 +8,29 @@ namespace Example\Database\Entities;
 class Model1
 {
     /**
+     * @autoincr
      * @column_info(name = id)
      * @var integer
      */
-    private $id;
+    public $id;
 
     /**
      * @column_info(name = name)
      * @var string
      */
-    private $name;
+    public $name;
 
     /**
      * @column_info(name = value)
      * @var string
      */
-    private $value;
+    public $value;
 
     /**
      * Поле без привязки к таблице
      * @var ololo pew-pew-prpew dsdfsdf
      */
-    private $extra_value;
+    public $extra_value;
 
 
     public function __construct($id, $name, $value)

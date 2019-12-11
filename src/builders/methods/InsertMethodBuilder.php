@@ -41,7 +41,7 @@ class InsertMethodBuilder implements IMethodBuilder
       $entity = $this->entities[$type];
 
       if ($parameter->isArray) {
-         return $this->buildBatchInsert($entity);
+         return $this->buildBatchInsert($parameter, $entity);
       }
       return $this->buildInsert($parameter, $entity);
    }
@@ -55,7 +55,7 @@ class InsertMethodBuilder implements IMethodBuilder
 
       $body = "";
       foreach ($entity->fields as $field) {
-         if ($field->columnName == 'id') {
+         if ($field->isAutoincr) {
             continue;
          }
          if ($field->columnName == null) {
@@ -63,27 +63,63 @@ class InsertMethodBuilder implements IMethodBuilder
          }
          $fieldNames[] = "`" . $field->columnName . "`";
          $fieldValues[] = ":" . $field->columnName;
-         
-         $insertData[] = "\t'$field->columnName' => $". $parameter->name."->".$field->name;
-       
+
+         $insertData[] = "\t'$field->columnName' => $" . $parameter->name . "->" . $field->name;
       }
-     
+
       $insertIgnore = false;
       $sql = 'INSERT' . ($insertIgnore ? ' IGNORE ' : ' ') . 'INTO ' . $entity->tableName . ' (' . implode(',', $fieldNames) . ') VALUES (' . implode(',', $fieldValues) . ')';
 
       $body = "\$query = '$sql';\n\n";
 
       $body .= "\$stm = \$this->_db->getConnection()->prepare(\$query);\n";
-      $body .= "\$stm->execute([\n".implode(",\n", $insertData)."\n]);\n";
+      $body .= "\$stm->execute([\n" . implode(",\n", $insertData) . "\n]);\n";
 
       $body .= "return \$this->_db->getConnection()->lastInsertId();";
 
-      
+
       return $body;
    }
 
-   private function buildBatchInsert(EntityModel  $entity)
+   private function buildBatchInsert(MethodParameter $parameter, EntityModel  $entity)
    {
-      return "";
+      $updateDuplicate = false;
+      $insertIgnore = false;
+
+      $body  = "";
+      $body  = "\$dataToInsert = [];\n";
+      $body .= "\$valuesPlaceholder = [];\n";
+      $body .= "foreach( \$$parameter->name as \$entity) {\n";
+      $body .= "\t\$values = [];\n";
+      $fieldNames = [];
+      foreach ($entity->fields as $field) {
+         if ($field->isAutoincr) {
+            continue;
+         }
+         if ($field->columnName == null) {
+            continue;
+         }
+         $fieldNames[] = "`" . $field->columnName . "`";
+         $body .= "\t\$dataToInsert[] = \$entity->" . $field->name.";\n";
+         $body .= "\t\$values[] = '?';\n";
+      }
+      $body .= "\t\$valuesPlaceholder[] = '(' . implode(',',\$values) . ')';\n ";
+      $body .= "}\n\n";
+
+      $sql = 'INSERT' . ($insertIgnore ? ' IGNORE ' : ' ') . 'INTO ' . $entity->tableName . ' (' . implode(',', $fieldNames) . ') VALUES ';
+     
+
+      $body .= "\$query = '$sql';\n";
+      $body .= "\$query .=  implode(',', \$valuesPlaceholder);\n\n";
+
+      $body .= "echo \$query;\n\n";
+
+      $body .= "\$stm = \$this->_db->getConnection()->prepare(\$query);\n";
+      $body .= "\$stm->execute(\$dataToInsert);\n\n";
+
+      $body .= "return \$this->_db->getConnection()->lastInsertId();";
+
+
+      return $body;
    }
 }

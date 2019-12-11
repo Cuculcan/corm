@@ -19,7 +19,7 @@ class CormTest extends \Codeception\Test\Unit
         ob_flush();
     }
 
-   
+
     // public function testShouldReturnDatabaseImpl()
     // {
     //     $db = Corm::getDatabase("Example\Database\ExampleDb", \Example\Config::db);
@@ -70,7 +70,34 @@ class CormTest extends \Codeception\Test\Unit
 
     //     $this->assertTrue($res instanceof Model1);
     //     $this->assertTrue($res->getId() == 1);
-       
     // }
 
+    // public function testShouldInsertValue()
+    // {
+    //     $db = Corm::getDatabase("Example\Database\ExampleDb", \Example\Config::db);
+    //     $this->assertNotNull($db);
+
+    //     $testDao = $db->testDao();
+    //     $this->assertNotNull($testDao);
+
+    //     $insertId = $testDao->insert(new Model1(0, "insert_param1", "insert_value"));
+    //     $this->assertTrue($insertId > 1);
+    //  }
+
+
+    // public function testShouldInsertBatchValues()
+    // {
+    //     $db = Corm::getDatabase("Example\Database\ExampleDb", \Example\Config::db);
+    //     $this->assertNotNull($db);
+
+    //     $testDao = $db->testDao();
+    //     $this->assertNotNull($testDao);
+
+    //     $models = [];
+    //     $models[] = new Model1(0, "insert0", "value0");
+    //     $models[] = new Model1(0, "insert1", "value1");
+    //     $models[] = new Model1(0, "insert2", "value2");
+    //     $insertId = $testDao->insertBatch($models);
+    //     $this->assertTrue($insertId > 1);
+    // }
 }
